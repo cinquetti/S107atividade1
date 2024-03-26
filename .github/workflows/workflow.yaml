@@ -1,0 +1,22 @@
+name: Continuous Integration
+
+on: 
+ push:
+   branches: [ "main" ]
+ pull_request:
+    branches: [ "main" ]
+
+jobs:
+  continuous_integration:
+    runs-on: ubuntu_latest
+
+    steps:
+      - uses: action/checkout@v3
+      - name: Using Unittest Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.11.2
+      - name: run install, build and test
+        run: |
+          python -m pip install --upgrade pip
+          python -m unittest calculadoraTest.py
