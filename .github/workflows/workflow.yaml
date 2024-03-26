@@ -55,8 +55,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Send email notification
         env:
-          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+          EMAIL_RECIPIENT: lucas.cinquetti@ges.inatel.br
         run: |
           sudo apt-get install mailutils
-          echo "Pipeline executado!" | mail -s "Pipeline Status" lucas.cinquetti@ges.inatel.br
+          echo "Pipeline executado!" | mail -s "Pipeline Status" $EMAIL_RECIPIENT
 
