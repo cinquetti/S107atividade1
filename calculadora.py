@@ -43,5 +43,3 @@ def run_calculadora():
 
     escolha = input("Digite sua escolha (1/2/3/4): ")
     print(calculadora(escolha))
-
-run_calculadora()
