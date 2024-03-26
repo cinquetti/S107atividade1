@@ -15,7 +15,7 @@ jobs:
       - name: Using Unittest Python
         uses: actions/setup-python@v3
         with:
-          python-version: 3.11.2
+          python-version: 3.9
       - name: run install, build and test
         run: |
           python -m pip install --upgrade pip
