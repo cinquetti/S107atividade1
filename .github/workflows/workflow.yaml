@@ -57,5 +57,6 @@ jobs:
         env:
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
         run: |
-          echo "Pipeline executado!" | mail -s "Pipeline Status" $EMAIL_RECIPIENT
+          sudo apt-get install mailutils
+          echo "Pipeline executado!" | mail -s "Pipeline Status" lucas.cinquetti@ges.inatel.br
 
