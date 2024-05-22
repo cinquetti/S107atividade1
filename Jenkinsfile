@@ -1,18 +1,17 @@
 pipeline {
-
-    agent any
+    agent {
+        docker {
+            image 'python:3.8-slim'
+        }
+    }
 
     stages {
-
-        stage('Build') {
+        stage('Setup') {
             steps {
-                echo 'Building...'
+                echo 'Setting up environment...'
+                sh 'python3 --version'
+                sh 'pip3 --version'
                 sh '''
-                    apt update
-                    apt install -y python3 python3-pip
-
-                    python3 --version
-
                     cd ${WORKSPACE}
                     ls
                 '''
@@ -20,30 +19,29 @@ pipeline {
         }
 
         stage('Test') {
-
             steps {
                 echo 'Testing...'
                 sh '''
-                   cd ${WORKSPACE}
-                   python3 -m unittest discover -s . -p "*Test.py"
-                   '''
+                    cd ${WORKSPACE}
+                    # Instalar dependências do projeto, se houver um requirements.txt
+                    if [ -f requirements.txt ]; then
+                        pip3 install -r requirements.txt
+                    fi
+                    # Executar testes unitários
+                    python3 -m unittest discover -s . -p "*Test.py"
+                '''
             }
-
         }
 
         stage('Notification') {
-
             steps {
                 echo 'Notification...'
                 sh '''
-                   cd scripts
-                   chmod 775 *
-                   ./jenkins.sh
-                   '''
+                    cd scripts
+                    chmod 775 *
+                    ./jenkins.sh
+                '''
             }
-
         }
-
     }
-
 }
