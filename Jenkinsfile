@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Setup') {
+        stage('Build') {
             steps {
                 echo 'Setting up environment...'
                 sh 'python3 --version'
