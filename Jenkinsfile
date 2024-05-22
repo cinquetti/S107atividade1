@@ -9,9 +9,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.image("${DOCKER_IMAGE}").withRun('-v /var/run/docker.sock:/var/run/docker.sock') { c ->
-                        sh "docker build -t my-python-app -f docker/Dockerfile ."
-                    }
+                    sh "docker build -t my-python-app -f docker/Dockerfile ."
                 }
             }
         }
@@ -19,12 +17,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    docker.image("${DOCKER_IMAGE}").inside('--volume /var/run/docker.sock:/var/run/docker.sock') {
-                        def pythonHome = tool name: 'Python 3.8', type: 'hudson.plugins.python.PythonInstallation'
-                        sh "${pythonHome}/bin/python --version"
-                        sh "${pythonHome}/bin/pip --version"
-                        sh "${pythonHome}/bin/python -m unittest discover -s . -p '*Test.py'"
-                    }
+                    // Executando os testes unitários dentro do contêiner Docker
+                    sh "docker run --rm -v ${WORKSPACE}:/app -w /app ${DOCKER_IMAGE} python3 -m unittest discover -s . -p '*Test.py'"
                 }
             }
         }
@@ -36,4 +30,5 @@ pipeline {
         }
     }
 }
+
 
