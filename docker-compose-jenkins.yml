@@ -1,18 +1,10 @@
 version: '3.8'
 
 services:
-  app:
+  jenkins-pipeline:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    working_dir: /app
-    environment:
-      - PYTHONUNBUFFERED=1
-    networks:
-      - jenkins
-
-networks:
-  jenkins:
-    driver: bridge
+      - .:/app
+    command: ["pytest", "calculadoraTest.py"]
