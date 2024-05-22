@@ -5,22 +5,18 @@ pipeline {
     stages {
 
         stage('Build') {
-
             steps {
                 echo 'Building...'
                 sh '''
-                    sudo apt update
-                    sudo apt install python3
-                    sudo apt install python3-pip
+                    apt update
+                    apt install -y python3 python3-pip
 
-                   '''
-                sh 'python3 --version'
-                sh '''
-                   cd ${WORKSPACE}
-                   ls
-                   '''
+                    python3 --version
+
+                    cd ${WORKSPACE}
+                    ls
+                '''
             }
-
         }
 
         stage('Test') {
