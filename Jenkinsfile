@@ -1,29 +1,39 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'python-app'
+    }
+
     stages {
-        stage('Build') {
+        stage('Build Docker Image') {
+            agent {
+                docker {
+                    image 'docker:latest'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps {
-                echo 'Setting up environment...'
-                sh 'python3 --version'
-                sh 'pip3 --version'
-                sh '''
-                    cd ${WORKSPACE}
-                    ls
-                '''
+                echo 'Building Docker image...'
+                script {
+                    docker.build(DOCKER_IMAGE, '-f Dockerfile .')
+                }
             }
         }
 
         stage('Test') {
+            agent {
+                docker {
+                    // Use a imagem Docker criada acima
+                    image "${DOCKER_IMAGE}:latest"
+                }
+            }
             steps {
                 echo 'Testing...'
                 sh '''
+                    python3 --version
+                    pip --version
                     cd ${WORKSPACE}
-                    # Instalar dependências do projeto, se houver um requirements.txt
-                    if [ -f requirements.txt ]; then
-                        pip3 install -r requirements.txt
-                    fi
-                    # Executar testes unitários
                     python3 -m unittest discover -s . -p "*Test.py"
                 '''
             }
