@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'python-app'
+        DOCKER_IMAGE = 'python:3.8-slim'
     }
 
     stages {
@@ -16,7 +16,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    docker.build(DOCKER_IMAGE, '-f Dockerfile .')
+                    docker.build("${DOCKER_IMAGE}", '-f docker/Dockerfile .')
                 }
             }
         }
@@ -24,29 +24,25 @@ pipeline {
         stage('Test') {
             agent {
                 docker {
-                    // Use a imagem Docker criada acima
-                    image "${DOCKER_IMAGE}:latest"
+                    image "${DOCKER_IMAGE}"
+                    reuseNode true
                 }
             }
             steps {
                 echo 'Testing...'
-                sh '''
-                    python3 --version
-                    pip --version
-                    cd ${WORKSPACE}
-                    python3 -m unittest discover -s . -p "*Test.py"
-                '''
+                script {
+                    def pythonHome = tool name: 'Python 3.8', type: 'hudson.plugins.python.PythonInstallation'
+                    sh "${pythonHome}/bin/python --version"
+                    sh "${pythonHome}/bin/pip --version"
+                    sh "${pythonHome}/bin/python -m unittest discover -s . -p '*Test.py'"
+                }
             }
         }
 
         stage('Notification') {
             steps {
                 echo 'Notification...'
-                sh '''
-                    cd scripts
-                    chmod 775 *
-                    ./jenkins.sh
-                '''
+                sh './jenkins.sh'
             }
         }
     }
