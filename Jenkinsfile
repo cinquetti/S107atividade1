@@ -6,6 +6,15 @@ pipeline {
     }
 
     stages {
+        stage('Install Docker Compose') {
+            steps {
+                script {
+                    sh 'apt update'
+                    sh 'apt install -y docker-compose'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -17,7 +26,6 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Executando os testes unitários dentro do contêiner Docker
                     sh 'docker-compose -f docker-compose-jenkins.yml run --rm app python3 -m unittest discover -s . -p "*Test.py"'
                 }
             }
@@ -30,6 +38,7 @@ pipeline {
         }
     }
 }
+
 
 
 
