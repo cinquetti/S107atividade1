@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clonar o repositório
-                git 'https://github.com/cinquetti/S107atividade1.git'
+                git branch: 'main', url: 'https://github.com/cinquetti/S107atividade1.git'
             }
         }
         stage('Build') {
