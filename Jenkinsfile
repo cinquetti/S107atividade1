@@ -1,39 +1,27 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = 'python:3.8-slim'
-    }
-
     stages {
-        stage('Install Docker Compose') {
+        stage('Checkout') {
+            steps {
+                // Clonar o repositório
+                git 'https://github.com/cinquetti/S107atividade1.git'
+            }
+        }
+        stage('Build') {
             steps {
                 script {
-                    sh 'apt update'
-                    sh 'apt install -y docker-compose'
+                    // Construir a imagem Docker a partir do Dockerfile na pasta docker/
+                    sh 'docker build -t my-python-app -f docker/Dockerfile .'
                 }
             }
         }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sh 'docker-compose -f docker-compose-jenkins.yml build'
-                }
-            }
-        }
-
         stage('Test') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose-jenkins.yml run --rm app python3 -m unittest discover -s . -p "*Test.py"'
+                    // Rodar testes
+                    sh 'docker run --rm my-python-app'
                 }
-            }
-        }
-
-        stage('Notification') {
-            steps {
-                sh './jenkins.sh'
             }
         }
     }

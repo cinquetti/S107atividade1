@@ -1,39 +1,18 @@
-# Use a imagem oficial do Python 3.8
-FROM python:3.8-slim
+# Usar a imagem base do Python
+FROM python:3.9-slim
 
-# Atualiza e instala dependências
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
-        libssl-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        libreadline-dev \
-        libsqlite3-dev \
-        wget \
-        curl \
-        llvm \
-        libncurses5-dev \
-        libncursesw5-dev \
-        xz-utils \
-        tk-dev \
-        libffi-dev \
-        liblzma-dev \
-        python-openssl \
-        git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Instala pipenv globalmente
-RUN pip install --upgrade pip setuptools wheel
-
-# Define o diretório de trabalho no contêiner
+# Definir o diretório de trabalho
 WORKDIR /app
 
-# Copia o requirements.txt para o contêiner e instala as dependências
-COPY requirements.txt .
+# Copiar os arquivos requirements.txt e instalar as dependências
+COPY ../requirements.txt .
 
-# Instala as dependências do projeto
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Define um entrypoint padrão
-CMD ["python3", "--version"]
+# Copiar o código fonte para o contêiner
+COPY ../calculadora.py .
+COPY ../calculadora_teste.py .
+COPY ../tests/ ./tests/
+
+# Comando padrão para rodar os testes
+CMD ["python", "-m", "unittest", "discover", "-s", "tests"]
